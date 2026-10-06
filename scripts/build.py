@@ -25,8 +25,11 @@ def main():
     destination = root / "dist" / f"empire-temporelle-{version}.zip"
     destination.parent.mkdir(exist_ok=True)
     with ZipFile(destination, "w") as archive:
-        for path in (source / "manifest.json", asset):
-            info = ZipInfo(path.relative_to(source).as_posix(), (2026, 1, 1, 0, 0, 0))
+        files = [(source / "manifest.json", "manifest.json"),
+                 (asset, asset.relative_to(source).as_posix()),
+                 (root / "LICENSE", "LICENSE")]
+        for path, archive_name in files:
+            info = ZipInfo(archive_name, (2026, 1, 1, 0, 0, 0))
             info.compress_type = ZIP_DEFLATED
             info.external_attr = 0o644 << 16
             archive.writestr(info, path.read_bytes())
